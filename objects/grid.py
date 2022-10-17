@@ -34,14 +34,21 @@ class Grid(object):
 
         Set the symbol in the indicated position.
         """
-        x, y = Grid.coord(position)
+        x, y = Grid.coord[position]
         self._squares[x][y] = symbol
     
     def getSquares(self):
         """
-        return the current matrix.
+        Return the current matrix.
         """
         return self._squares
+    
+    def getSquare(self, position):
+        """
+        Return what it has in the given position.
+        """
+        x, y = Grid.coord[position]
+        return self._squares[x][y]
 
     def printGrid(self):
         """
