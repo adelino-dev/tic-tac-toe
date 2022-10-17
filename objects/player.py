@@ -28,3 +28,7 @@ class Player(object):
 
         """
         grid.markSquare(position, self._symbol)
+    
+    def getSymbol(self):
+        "Return the symbol (X or O)."
+        return self._symbol
