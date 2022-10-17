@@ -1,5 +1,6 @@
 from objects.grid import Grid
 from objects.player import Player
+import os
 
 class Moderator(object):
     """
@@ -14,11 +15,12 @@ class Moderator(object):
         self._plays = 0 #Number of plays
 
     def askPosition(self):
+        self.clear()
         symbol = self._currentPlayer.getSymbol()
         self._grid.printGrid()
         
-        position = input("Jogador %s, escolha uma posição:" % symbol)
-        position = self.validatePosition(position)
+        position = input("\nJogador %s, escolha uma posição:" % symbol).upper()
+        position = self._validatePosition(position)
         
         self._currentPlayer.markSquare(self._grid, position)
 
@@ -28,37 +30,49 @@ class Moderator(object):
         
         else:
             self._currentPlayer = self._playerX
+        
+        self._plays += 1
     
-    def validatePosition(self, position):
+    def _validatePosition(self, position):
         """
-        Analyzes if the given position is valid and 
-        if it has been typed before. 
-        If yes for either case, ask the user
+        Analyzes if the given position 
+        is valid and if it has been typed before. 
+        If it is not valid or it's was typed before, ask the user
+        to enter the position again.
+        """
+        position = self._validateLetter(position)   
+        
+        square = self._grid.getSquare(position)
+        test = square == "x" or square == "o"
+
+        while test:
+            print("\n  Ops! Essa posição já foi escolhida antes.")
+            position = input("Digite outra posição:").upper()
+            position = self._validateLetter(position)
+            
+            square = self._grid.getSquare(position)
+            test = square == "x" or square == "o"
+        
+        return position
+    
+    def _validateLetter(self, position):
+        """
+        Analyzes if the given position is valid.
+        If it's not valid, ask the user
         to enter the position again.
         """
         valid_positions = Grid.coord.keys()
-        square = self._grid.getPosition(position)
 
-        test1 = not position in valid_positions
-        test2 = square == "x" or square == "o"
+        test = not position in valid_positions
 
-        while test1 or test2:
-            if test1:
-                print("\n  Ops! Você digitou algo inválido.")
-                print("Digite apenas uma letra do alfabeto entre A e I.")
-                position = input("Digite novamente:")
-
-            else:
-                print("\n  Ops! Essa posição já foi escolhida antes."
-                position = input("Digite outra posição:")
-                
+        while test:
+            print("\n  Ops! Você digitou algo inválido.")
+            print("Digite apenas uma letra do alfabeto entre A e I.")
+            position = input("Digite novamente:").upper()
             
-            test1 = not position in valid_positions
-            square = self._grid.getPosition(position)
-            test2 = square == "x" or square == "o"
-        
-        return position
+            test = not position in valid_positions  
 
+        return position
     
     def analyze(self):
         """
@@ -97,7 +111,7 @@ class Moderator(object):
             status =  "x won"
 
         elif diagonal1 == o_won or diagonal2 == o_won:
-            status = "o won
+            status = "o won"
 
         #analyze if there was a tie:
         if status == "no winner" and self._plays == 9:
@@ -112,12 +126,26 @@ class Moderator(object):
         - Jogador O venceu!!
         - Jogo empatado.
         """
+        self.clear()
+        self._grid.printGrid()
+
         if self.analyze() == "x won":
-            print("Jogador X venceu!!")
+            print("\nJogador X venceu!!\n")
 
         
         elif self.analyze() == "o won":
-            print("Jogador O venceu!!")
+            print("\nJogador O venceu!!\n")
         
         else:
-            print("Jogo empatado.")
+            print("\nJogo empatado.\n")
+    
+    def clear(self):
+        """
+        Clear the screen.
+        """
+        
+        if os.name == "nt": #if the Operational System is Windows
+            os.system("cls") 
+            
+        else:
+            os.system("clear")

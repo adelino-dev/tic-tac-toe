@@ -8,7 +8,7 @@ class Player(object):
         """
         self._symbol = symbol
     
-    def markSquare(grid, position):
+    def markSquare(self, grid, position):
         """
         Paramenters:
             grid --> a Grid object.
